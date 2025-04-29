@@ -1,9 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using ProductAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -11,6 +10,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApiDbContext>();
 
 var app = builder.Build();
 
@@ -21,6 +24,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

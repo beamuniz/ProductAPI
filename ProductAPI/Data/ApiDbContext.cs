@@ -1,14 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ProductAPI.Models;
 
-namespace ProductAPI.Data
-{
-    public class ApiDbContext  : DbContext
-    {
-        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
-        {
-        }
+namespace ProductAPI.Data;
 
-        public DbSet<Produto> Produtos { get; set; }
-    }
+public class ApiDbContext(DbContextOptions<ApiDbContext> options) : IdentityDbContext(options)
+{
+    public DbSet<Produto> Produtos { get; set; }
 }
