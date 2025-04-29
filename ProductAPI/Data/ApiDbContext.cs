@@ -6,5 +6,5 @@ namespace ProductAPI.Data;
 
 public class ApiDbContext(DbContextOptions<ApiDbContext> options) : IdentityDbContext(options)
 {
-    public DbSet<Produto> Produtos { get; set; }
+    public DbSet<Product> Products { get; set; }
 }
