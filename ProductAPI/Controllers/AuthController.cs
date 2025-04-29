@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ public class AuthController(
         if (result.Succeeded)
         {
             await signInManager.SignInAsync(user, false);
-            return Ok(GerateJwt());
+            return Ok(GenerateJwtTokenAsync(registerUser.Email));
         }
 
         return Problem("Registration failed");
@@ -49,19 +50,29 @@ public class AuthController(
 
         if (result.Succeeded)
         {
-            return Ok(GerateJwt());
+            return Ok(GenerateJwtTokenAsync(loginUser.Email));
         }
 
         return Ok();
     }
 
-    private string GerateJwt()
+    private async Task<string> GenerateJwtTokenAsync(string email)
     {
+        var user = await userManager.FindByEmailAsync(email);
+        var roles = await userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.UserName)
+        };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
         var token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
         {
+            Subject = new ClaimsIdentity(claims),
             Issuer = _jwtSettings.Issuer,
             Audience = _jwtSettings.Audience,
             Expires = DateTime.UtcNow.AddDays(7),

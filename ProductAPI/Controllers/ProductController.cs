@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductAPI.Data;
 using ProductAPI.Models;
 
 namespace ProductAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ProductController(ApiDbContext context) : ControllerBase
@@ -56,6 +58,7 @@ public class ProductController(ApiDbContext context) : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<Product>> DeleteProduct(int id)
     {
